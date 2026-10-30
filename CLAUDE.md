@@ -27,7 +27,7 @@ Run from the repo root with the system Python (build123d, numpy, scipy and matpl
   - `make_layout()` derives the whole axial stack and the axis height from the two motors. Every station is computed from its neighbour plus a named gap; nothing is hard-coded.
   - Rotating parts are built in a local frame whose +Z is the spin axis with z == rig x, and are mapped by `to_rig()`. Static parts are built directly in rig coordinates (X = spin axis, base top at z = 0).
   - `check()` places dummy hardware (motors, bearings, slip ring, sensor forks). It requires 0.3 mm between parts in different rotation groups, and no solid overlap between parts in the same group except the pairs listed in `ALLOWED_OVERLAP`. If you add a part, give it the right group. Add to `ALLOWED_OVERLAP` only for intended fits.
-  - Exports go to `cad/exports/carrier_<X>/` (gitignored, since the script is the source of truth). `docs/BOM.md` is generated, so do not hand-edit it.
+  - Exports go to `cad/exports/carrier_<X>/` and are committed so the printable files are available without running the script. Re-run `python cad/rig.py --carrier both` and commit the exports together with any CAD or parameter change, so they never go stale. `docs/BOM.md` is generated, so do not hand-edit it.
 - `analysis/motor_model.py`: the motor model V = IR + kE·ω, τ = kT·(I − I0(ω)), with I0 affine in ω; the fitting code; and `nested_prediction()`, the series model (carrier torque = τ_out + τ_par, inner torque = τ_out). Every script imports from here.
 - `firmware/tachometer/tachometer.ino`: an Arduino tachometer on D2/D3 at 250000 baud. Its summary and raw output formats are parsed by `analysis/log_serial.py` and `motor_model.read_spinup()`; change them together.
 
