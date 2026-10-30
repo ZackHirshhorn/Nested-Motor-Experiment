@@ -1,0 +1,3 @@
+motor,can_dia,flat_width,can_length,boss_dia,boss_length,shaft_dia,shaft_length,rear_clearance,source
+A,20.4,15.1,25.1,6.15,1.7,2.0,8.0,4.0,ASSUMED generic 130-size motor - caliper your motor and replace this row
+B,20.4,15.1,25.1,6.15,1.7,2.0,8.0,4.0,ASSUMED generic 130-size motor - caliper your motor and replace this row
