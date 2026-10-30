@@ -1,5 +1,7 @@
 # Nested DC-Motor Rotation Experiment
 
+### EVERYTHING HERE WAS CREATED BY CLAUDE, INCLUDING THE ORIGINAL PLAN. I ASKED FOR A MOTOR THAT ROTATES ANOTHER MOTOR
+
 One DC motor (the **carrier**) spins the whole body of a second DC motor (the
 **inner** motor) while the inner motor's own rotor turns inside it. Measure how the
 output speed composes. The original plan is
