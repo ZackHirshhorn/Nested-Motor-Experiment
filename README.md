@@ -10,6 +10,8 @@ this repository implements it.
 
 ![rig stack](docs/rig_section.png)
 
+**3D view:** open [`cad/exports/rig_assembly.step`](cad/exports/rig_assembly.step) in any CAD viewer (FreeCAD, Fusion, Onshape, or an online STEP viewer). It contains the whole running rig, with every part named and colored: orange spins with the cradle, blue turns at output speed, light grey is static.
+
 ## Repository
 
 | Path | Contents |

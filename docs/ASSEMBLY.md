@@ -2,7 +2,7 @@
 
 Parts come from `cad/exports/carrier_<X>/`, where X is the motor
 `select_carrier.py` chose as the carrier. Hardware is listed in [BOM.md](BOM.md).
-View `assembly_phase3.step` in any CAD viewer alongside these steps.
+Open `cad/exports/rig_assembly.step` in any CAD viewer alongside these steps. It is the complete rig with every part named and colored.
 
 Axis convention: +X runs from the carrier toward the output shaft. The cradle
 sensor and output sensor sit on the +Y side; the slip-ring stop and the Phase 1

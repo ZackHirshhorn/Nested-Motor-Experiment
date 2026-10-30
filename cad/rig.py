@@ -7,7 +7,8 @@ Run from the repo root:
     python cad/rig.py --no-check      # skip the (slower) clearance checks
 
 Each configuration is written to cad/exports/carrier_<X>/ as print-oriented
-STLs plus assembly STEPs, and docs/BOM.md is regenerated from the geometry.
+STLs plus assembly STEPs. cad/exports/rig_assembly.step is the colored
+full-rig assembly, and docs/BOM.md is regenerated from the geometry.
 
 Mechanical concept (details and reasoning in docs/DESIGN_NOTES.md):
 
@@ -26,13 +27,14 @@ three bearings at once.
 """
 
 import argparse
+import copy
 import math
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from types import SimpleNamespace
 
-from build123d import Align, Box, Compound, Cone, Cylinder, Pos, Rot, export_step, export_stl
+from build123d import Align, Box, Color, Compound, Cone, Cylinder, Pos, Rot, export_step, export_stl
 
 import parameters as p
 
@@ -672,18 +674,37 @@ def to_bed(shape, rot):
     return Pos(-(bb.min.X + bb.max.X) / 2, -(bb.min.Y + bb.max.Y) / 2, -bb.min.Z) * shape
 
 
+# Assembly colors: printed parts by what they do, purchased hardware by what it is
+GROUP_COLORS = {"static": (0.78, 0.80, 0.83), "carrier": (0.88, 0.48, 0.25), "output": (0.25, 0.56, 0.88)}
+HARDWARE_COLORS = {
+    "base_plate": (0.55, 0.58, 0.62),
+    "motor_carrier_can": (0.30, 0.30, 0.32), "motor_inner_can": (0.30, 0.30, 0.32),
+    "motor_carrier_shaft": (0.75, 0.75, 0.78), "motor_inner_shaft": (0.75, 0.75, 0.78),
+    "bearing_front": (0.62, 0.64, 0.68), "bearing_rear": (0.62, 0.64, 0.68),
+    "slip_ring": (0.80, 0.66, 0.23),
+    "sensor_cradle": (0.18, 0.49, 0.20), "sensor_output": (0.18, 0.49, 0.20), "sensor_p1": (0.18, 0.49, 0.20),
+}
+
+
+def assembly_step(items, path: Path, label: str):
+    """Write one STEP holding every part as a named, colored child. Parts are
+    copied so the same shape can appear in several assemblies."""
+    children = []
+    for it in items:
+        s = copy.copy(it.shape)
+        s.label = it.name
+        s.color = Color(*HARDWARE_COLORS.get(it.name, GROUP_COLORS.get(it.group, (0.6, 0.6, 0.6))))
+        children.append(s)
+    export_step(Compound(children=children, label=label), str(path))
+
+
 def export(b: Build, out_dir: Path):
     out_dir.mkdir(parents=True, exist_ok=True)
     for stem, (shape, rot) in b.exports.items():
         export_stl(to_bed(shape, rot), str(out_dir / f"{stem}.stl"))
     for name, items in (("assembly_phase3", b.phase3), ("assembly_phase3_loaded", b.phase3_loaded),
                         ("assembly_phase1", b.phase1)):
-        children = []
-        for it in items:
-            s = it.shape
-            s.label = it.name
-            children.append(s)
-        export_step(Compound(children=children), str(out_dir / f"{name}.step"))
+        assembly_step(items, out_dir / f"{name}.step", name)
 
 
 def summary(b: Build) -> str:
@@ -810,6 +831,9 @@ def main(argv=None):
         export(b, out)
         print(f"  exported {len(b.exports)} STLs + 3 assembly STEPs to {out.relative_to(p.ROOT)}")
         builds.append(b)
+    # the one file to open for a 3D look at the whole running rig (first configuration built)
+    assembly_step(builds[0].phase3, EXPORT_DIR / "rig_assembly.step", "nested_motor_rig")
+    print(f"full colored assembly written to {(EXPORT_DIR / 'rig_assembly.step').relative_to(p.ROOT)}")
     write_bom(builds)
     print(f"BOM written to {BOM_PATH.relative_to(p.ROOT)}")
     return 1 if failed else 0
