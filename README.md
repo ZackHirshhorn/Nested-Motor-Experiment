@@ -65,3 +65,7 @@ python analysis/selftest.py                # pipeline check on synthetic data
   sizes.** Replace these before printing (DESIGN_NOTES §7).
 - The analysis pipeline is validated on synthetic data (`analysis/selftest.py`).
   No real measurements have been taken yet.
+
+## License
+
+[MIT](LICENSE)
